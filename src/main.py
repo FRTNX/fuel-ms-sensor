@@ -55,10 +55,12 @@ class Sensor:
         self._update()
         self._print('directive: ', self._directive)
         data = { 'fuel': self._fuel, 'sensorId': self._sensor_id }
-        request = requests.post('https://fuel-ms-server.onrender.com/api/v0/sensor', json=data)
-        # request = requests.post('http://localhost:2222/api/v0/sensor', json=data)
+        try:
+            request = requests.post('https://fuel-ms-server.onrender.com/api/v0/sensor', json=data)
+            # request = requests.post('http://localhost:2222/api/v0/sensor', json=data)
+        except Exception as e:
+            print(e)
         
-
     def _update(self):
         self._print('fuel percentage:', self._fuel_percentage)
         self._print('fuel:', self._fuel)
@@ -82,7 +84,7 @@ class Sensor:
                 self._fuel -= change_in_fuel 
             else:
                 value = random.randint(1, 100)
-                if value < 30 or self._fuel_percentage < 0.1:
+                if value < 40 or self._fuel_percentage < 0.1:
                     self._directive = 'refill'
                     self._fuel += change_in_fuel
                 else:
@@ -129,17 +131,17 @@ async def init_sensors(request: Request):
         return { 'error': str(e) }
 
 
-if __name__ == '__main__':
-    sensor1 = Sensor('gamma_001')
-    sensor2 = Sensor('gamma_002')
-    sensor3 = Sensor('gamma_003')
-    sensor4 = Sensor('gamma_004')
-    sensor5 = Sensor('gamma_005')
-    sensors = [sensor1, sensor2, sensor3, sensor4, sensor5]
-    # sensors = [sensor1]
-    while True:
-        for sensor in sensors:
-            sensor.send_readings()
-        time.sleep(2)
+# if __name__ == '__main__':
+#     sensor1 = Sensor('gamma_001')
+#     sensor2 = Sensor('gamma_002')
+#     sensor3 = Sensor('gamma_003')
+#     sensor4 = Sensor('gamma_004')
+#     sensor5 = Sensor('gamma_005')
+#     sensors = [sensor1, sensor2, sensor3, sensor4, sensor5]
+#     # sensors = [sensor1]
+#     while True:
+#         for sensor in sensors:
+#             sensor.send_readings()
+#         time.sleep(2)
 
     
