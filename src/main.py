@@ -57,7 +57,9 @@ class Sensor:
         data = { 'fuel': self._fuel, 'sensorId': self._sensor_id }
         try:
             request = requests.post('https://fuel-ms-server.onrender.com/api/v0/sensor', json=data)
-            # request = requests.post('http://localhost:2222/api/v0/sensor', json=data)
+            requests.get('https://fuel-ms-server.onrender.com/api/v0/vehicle/consumption')
+            # requests.post('http://localhost:2222/api/v0/sensor', json=data)
+            # requests.get('http://localhost:2222/api/v0/vehicle/consumption')
         except Exception as e:
             print(e)
         
@@ -93,7 +95,6 @@ class Sensor:
                     
     def _print(self, *text):
         print(self._sensor_id, ':', text)
-            
 
 
 def simulate_sensors(sensors):
