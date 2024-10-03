@@ -56,7 +56,7 @@ class Sensor:
         self._print('directive: ', self._directive)
         data = { 'fuel': self._fuel, 'sensorId': self._sensor_id }
         try:
-            request = requests.post('https://fuel-ms-server.onrender.com/api/v0/sensor', json=data)
+            requests.post('https://fuel-ms-server.onrender.com/api/v0/sensor', json=data)
             requests.get('https://fuel-ms-server.onrender.com/api/v0/vehicle/consumption')
             # requests.post('http://localhost:2222/api/v0/sensor', json=data)
             # requests.get('http://localhost:2222/api/v0/vehicle/consumption')
@@ -66,10 +66,17 @@ class Sensor:
     def _update(self):
         self._print('fuel percentage:', self._fuel_percentage)
         self._print('fuel:', self._fuel)
+        self._print('capacity:', self._capacity)
         if self._directive == 'burn':
-            change_in_fuel = random.randint(int(self._capacity * 0.01), int(self._capacity * 0.08))
+            val = random.randint(1, 100)
+            random_anomaly = True if val < 10 else False
+            if random_anomaly:
+                print('>>>>>>>ANOMALY<<<<<<<<')
+                change_in_fuel = self._capacity * random.randint(20, 30) * 0.01
+            else:
+                change_in_fuel = random.randint(int(self._capacity * 0.005), int(self._capacity * 0.04))
         else:
-            change_in_fuel = int(self._capacity * 0.25)
+            change_in_fuel = int(self._capacity * 0.18)
         
         if self._directive == 'refill':
             target_fill = self._capacity * self._refill_target
@@ -80,7 +87,7 @@ class Sensor:
                 self._fuel += change_in_fuel
             else:
                 self._directive = 'burn'
-                self._fuel -= change_in_fuel
+                self._fuel -= random.randint(int(self._capacity * 0.001), int(self._capacity * 0.02))
         else:          
             if self._fuel_percentage > 0.55:
                 self._fuel -= change_in_fuel 
@@ -104,8 +111,9 @@ def simulate_sensors(sensors):
             sensor.send_readings()
         time.sleep(2)
     
-    time.sleep(10)
+    time.sleep(15)
     ACTIVE_SIMULATIONS = False
+
 
 @app.put('/sensors')
 async def init_sensors(request: Request):
@@ -130,19 +138,5 @@ async def init_sensors(request: Request):
     except Exception as e:
         print(e)
         return { 'error': str(e) }
-
-
-# if __name__ == '__main__':
-#     sensor1 = Sensor('gamma_001')
-#     sensor2 = Sensor('gamma_002')
-#     sensor3 = Sensor('gamma_003')
-#     sensor4 = Sensor('gamma_004')
-#     sensor5 = Sensor('gamma_005')
-#     sensors = [sensor1, sensor2, sensor3, sensor4, sensor5]
-#     # sensors = [sensor1]
-#     while True:
-#         for sensor in sensors:
-#             sensor.send_readings()
-#         time.sleep(2)
 
     
